@@ -8,6 +8,7 @@ import SwiftUI
 struct SummaryCardView: View {
     let summary: SummaryViewData
     let onAdvanceHole: () -> Void
+    let onUndoAdvanceHole: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -61,6 +62,28 @@ struct SummaryCardView: View {
             .disabled(summary.isNextHoleDisabled)
             .accessibilityLabel(summary.nextHoleTitle)
             .accessibilityHint(summary.nextHoleDescription)
+
+            if summary.showsUndoAdvance {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("誤タップなら直前の移動を戻せます")
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(.white.opacity(0.72))
+
+                    Button {
+                        WatchHaptics.play(.directionDown)
+                        onUndoAdvanceHole()
+                    } label: {
+                        Label(summary.undoAdvanceTitle, systemImage: "arrow.uturn.backward.circle.fill")
+                            .font(.footnote.weight(.bold))
+                            .frame(maxWidth: .infinity, minHeight: WatchDesign.secondaryButtonHeight)
+                    }
+                    .buttonStyle(.bordered)
+                    .tint(.white.opacity(0.92))
+                    .accessibilityLabel(summary.undoAdvanceTitle)
+                    .accessibilityHint(summary.undoAdvanceDescription)
+                }
+                .transition(.opacity.combined(with: .move(edge: .top)))
+            }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(WatchDesign.cardPadding)
