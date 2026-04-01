@@ -1,14 +1,14 @@
 ## Summary
 
-- 
+-
 
 ## Why
 
-- 
+-
 
 ## Changes
 
-- 
+-
 
 ## Verification
 
@@ -17,4 +17,4 @@
 
 ## Risks / Follow-up
 
-- 
+-
