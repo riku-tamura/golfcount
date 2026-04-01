@@ -84,6 +84,8 @@
   - GitHub で有効にしたい推奨設定と PR 運用手順
 - `.github/pull_request_template.md`
   - PR 作成時に確認観点を揃えるためのテンプレート
+- `.github/workflows/watchos-build.yml`
+  - push / pull request 時に watchOS ビルドを実行する CI 設定
 
 ## 変更時の目安
 
