@@ -12,6 +12,7 @@ final class GolfCountViewModel: ObservableObject {
     @Published var showsResetConfirmation = false
 
     private let repository: any GolfCountRepository
+    private var lastAdvancedRecord: GolfCountRecord?
 
     init(repository: any GolfCountRepository) {
         self.repository = repository
@@ -19,7 +20,7 @@ final class GolfCountViewModel: ObservableObject {
     }
 
     var summary: SummaryViewData {
-        SummaryViewData(record: record)
+        SummaryViewData(record: record, canUndoAdvance: lastAdvancedRecord != nil)
     }
 
     var counters: [CounterViewData] {
@@ -45,11 +46,23 @@ final class GolfCountViewModel: ObservableObject {
             return
         }
 
+        lastAdvancedRecord = record
         record = updatedRecord
         repository.saveRecord(record)
     }
 
+    func undoAdvanceHole() {
+        guard let lastAdvancedRecord else {
+            return
+        }
+
+        record = lastAdvancedRecord
+        self.lastAdvancedRecord = nil
+        repository.saveRecord(record)
+    }
+
     func reset() {
+        lastAdvancedRecord = nil
         record = .initial
         showsResetConfirmation = false
         repository.saveRecord(record)
@@ -63,6 +76,7 @@ final class GolfCountViewModel: ObservableObject {
             return
         }
 
+        lastAdvancedRecord = nil
         record = updatedRecord
         repository.saveRecord(record)
     }

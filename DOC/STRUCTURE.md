@@ -26,6 +26,10 @@
 
 - 構成説明、設計意図、UI 方針を残すフォルダ
 
+### `.github`
+
+- GitHub の PR 運用に使うテンプレートや設定ファイルを置くフォルダ
+
 ## ファイルごとの役割
 
 ### App
@@ -76,6 +80,12 @@
   - ビルド生成物や `.DS_Store` を Git 管理から外す設定
 - `DOC/NEXT_ACTIONS.md`
   - 実機での確認事項と次に着手すべき内容の整理
+- `DOC/GITHUB_SETTINGS.md`
+  - GitHub で有効にしたい推奨設定と PR 運用手順
+- `.github/pull_request_template.md`
+  - PR 作成時に確認観点を揃えるためのテンプレート
+- `.github/workflows/watchos-build.yml`
+  - push / pull request 時に watchOS ビルドを実行する CI 設定
 
 ## 変更時の目安
 

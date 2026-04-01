@@ -23,7 +23,8 @@ struct ContentView: View {
                 LazyVStack(alignment: .leading, spacing: WatchDesign.sectionSpacing) {
                     SummaryCardView(
                         summary: viewModel.summary,
-                        onAdvanceHole: viewModel.advanceToNextHole
+                        onAdvanceHole: viewModel.advanceToNextHole,
+                        onUndoAdvanceHole: viewModel.undoAdvanceHole
                     )
 
                     ForEach(viewModel.counters) { counter in
