@@ -12,18 +12,14 @@ struct CounterCardView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            HStack(alignment: .firstTextBaseline) {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(counter.title)
-                        .font(.headline)
-                        .foregroundStyle(.white)
+            Text(counter.title)
+                .font(.headline)
+                .foregroundStyle(.white)
 
-                    Text(counter.subtitle)
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                }
-
-                Spacer()
+            if let subtitle = counter.subtitle {
+                Text(subtitle)
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
             }
 
             Text(counter.valueText)
@@ -92,7 +88,6 @@ private struct CountButtonView: View {
             .frame(maxWidth: .infinity, minHeight: WatchDesign.buttonHeight)
         }
         .buttonStyle(.borderedProminent)
-        .buttonRepeatBehavior(.enabled)
         .tint(tint)
         .accessibilityLabel(accessibilityLabel)
     }

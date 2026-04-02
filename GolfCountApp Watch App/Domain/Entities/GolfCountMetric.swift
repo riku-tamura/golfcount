@@ -6,82 +6,78 @@
 import Foundation
 
 enum GolfCountMetric: CaseIterable, Identifiable {
-    case holeNumber
     case strokes
-    case penalty
     case putts
+    case penalty
 
     var id: Self { self }
 
     var title: String {
         switch self {
-        case .holeNumber:
-            return "ホール"
         case .strokes:
             return "打数"
-        case .penalty:
-            return "ペナルティ"
         case .putts:
             return "パット"
+        case .penalty:
+            return "ペナルティ"
         }
     }
 
-    var subtitle: String {
+    var subtitle: String? {
         switch self {
-        case .holeNumber:
-            return "1〜18"
         case .strokes:
-            return "ショット数"
-        case .penalty:
-            return "加算分"
+            return nil
         case .putts:
-            return "グリーン上"
+            return nil
+        case .penalty:
+            return nil
         }
     }
 
     var minimumValue: Int {
         switch self {
-        case .holeNumber:
-            return 1
-        case .strokes, .penalty, .putts:
+        case .strokes, .putts, .penalty:
             return 0
         }
     }
 
     var maximumValue: Int? {
         switch self {
-        case .holeNumber:
-            return 18
-        case .strokes, .penalty, .putts:
+        case .strokes, .penalty:
             return nil
+        case .putts:
+            return nil
+        }
+    }
+
+    func maximumValue(in record: GolfCountRecord) -> Int? {
+        switch self {
+        case .strokes, .penalty:
+            return maximumValue
+        case .putts:
+            return record.currentHole.strokes
         }
     }
 
     func value(in record: GolfCountRecord) -> Int {
         switch self {
-        case .holeNumber:
-            return record.holeNumber
         case .strokes:
-            return record.strokes
-        case .penalty:
-            return record.penalty
+            return record.currentHole.strokes
         case .putts:
-            return record.putts
+            return record.currentHole.putts
+        case .penalty:
+            return record.currentHole.penalty
         }
     }
 
-    func applying(delta: Int, to record: inout GolfCountRecord) {
-        let nextValue = boundedValue(from: value(in: record) + delta)
-
+    func applying(delta: Int, to hole: inout GolfCountRecord.Hole) {
         switch self {
-        case .holeNumber:
-            record.holeNumber = nextValue
         case .strokes:
-            record.strokes = nextValue
-        case .penalty:
-            record.penalty = nextValue
+            hole.updateStrokes(by: delta)
         case .putts:
-            record.putts = nextValue
+            hole.updatePutts(by: delta)
+        case .penalty:
+            hole.updatePenalty(by: delta)
         }
     }
 

@@ -46,9 +46,9 @@
 
 ## 今後の拡張ポイント
 
-- 履歴保存を追加する場合
-  - `Data` に履歴用 Repository を追加
-  - `Domain` にラウンド単位の Entity を追加
+- ホールごとの追加項目を増やす場合
+  - `GolfCountRecord.Hole` に項目を追加
+  - `GolfCountMetric` と `CounterViewData` を更新する
 - 統計表示を追加する場合
   - `Presentation` に別 ViewModel / View を追加
 - 永続化を `SwiftData` や `FileManager` に変える場合

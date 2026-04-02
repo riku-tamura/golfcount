@@ -12,7 +12,6 @@ enum WatchDesign {
     static let cardCornerRadius: CGFloat = 18
     static let valuePanelHeight: CGFloat = 52
     static let buttonHeight: CGFloat = 56
-    static let secondaryButtonHeight: CGFloat = 44
 
     static let screenBackground = LinearGradient(
         colors: [

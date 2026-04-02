@@ -7,10 +7,11 @@ import Foundation
 
 struct UserDefaultsGolfCountRepository: GolfCountRepository {
     private enum Keys {
-        static let holeNumber = "holeNumber"
-        static let strokes = "strokes"
-        static let penalty = "penalty"
-        static let putts = "putts"
+        static let roundRecord = "roundRecord"
+        static let legacyHoleNumber = "holeNumber"
+        static let legacyStrokes = "strokes"
+        static let legacyPenalty = "penalty"
+        static let legacyPutts = "putts"
     }
 
     private let userDefaults: UserDefaults
@@ -20,26 +21,36 @@ struct UserDefaultsGolfCountRepository: GolfCountRepository {
     }
 
     func loadRecord() -> GolfCountRecord {
-        let holeNumber: Int
-
-        if userDefaults.object(forKey: Keys.holeNumber) == nil {
-            holeNumber = GolfCountRecord.initial.holeNumber
-        } else {
-            holeNumber = userDefaults.integer(forKey: Keys.holeNumber)
+        if let data = userDefaults.data(forKey: Keys.roundRecord),
+           let record = try? JSONDecoder().decode(GolfCountRecord.self, from: data) {
+            return record
         }
 
-        return GolfCountRecord(
-            holeNumber: holeNumber,
-            strokes: userDefaults.integer(forKey: Keys.strokes),
-            penalty: userDefaults.integer(forKey: Keys.penalty),
-            putts: userDefaults.integer(forKey: Keys.putts)
-        )
+        return migrateLegacyRecord()
     }
 
     func saveRecord(_ record: GolfCountRecord) {
-        userDefaults.set(record.holeNumber, forKey: Keys.holeNumber)
-        userDefaults.set(record.strokes, forKey: Keys.strokes)
-        userDefaults.set(record.penalty, forKey: Keys.penalty)
-        userDefaults.set(record.putts, forKey: Keys.putts)
+        guard let data = try? JSONEncoder().encode(record) else {
+            return
+        }
+
+        userDefaults.set(data, forKey: Keys.roundRecord)
+    }
+
+    private func migrateLegacyRecord() -> GolfCountRecord {
+        let selectedHoleNumber: Int
+
+        if userDefaults.object(forKey: Keys.legacyHoleNumber) == nil {
+            selectedHoleNumber = GolfCountRecord.initial.selectedHoleNumber
+        } else {
+            selectedHoleNumber = min(max(1, userDefaults.integer(forKey: Keys.legacyHoleNumber)), GolfCountRecord.holeCount)
+        }
+
+        var record = GolfCountRecord.initial
+        record.selectHole(selectedHoleNumber)
+        record.apply(delta: userDefaults.integer(forKey: Keys.legacyStrokes), for: .strokes)
+        record.apply(delta: userDefaults.integer(forKey: Keys.legacyPutts), for: .putts)
+        record.apply(delta: userDefaults.integer(forKey: Keys.legacyPenalty), for: .penalty)
+        return record
     }
 }
