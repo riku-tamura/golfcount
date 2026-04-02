@@ -7,83 +7,61 @@ import SwiftUI
 
 struct SummaryCardView: View {
     let summary: SummaryViewData
-    let onAdvanceHole: () -> Void
-    let onUndoAdvanceHole: () -> Void
+    let onSelectHole: (Int) -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(alignment: .top) {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(summary.appName)
-                        .font(.headline)
-
-                    Text(summary.persistenceLabel)
-                        .font(.caption2.weight(.semibold))
-                        .foregroundStyle(.white.opacity(0.8))
-                }
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .center) {
+                Text(summary.scoreTitle)
+                    .font(.caption.weight(.black))
+                    .foregroundStyle(.white.opacity(0.94))
 
                 Spacer()
 
-                Text(summary.holeLabel)
-                    .font(.caption.weight(.bold))
+                Text(summary.scoreScopeText)
+                    .font(.caption2.weight(.bold))
+                    .foregroundStyle(.white.opacity(0.82))
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
-                    .background(.white.opacity(0.16), in: Capsule())
+                    .background(.white.opacity(0.14), in: Capsule())
             }
 
-            HStack(alignment: .lastTextBaseline, spacing: 6) {
-                Text(summary.totalScoreText)
-                    .font(.system(.largeTitle, design: .rounded).weight(.bold))
-                    .monospacedDigit()
-                    .contentTransition(.numericText())
+            Text(summary.totalScoreText)
+                .font(.system(size: 42, weight: .bold, design: .rounded))
+                .monospacedDigit()
+                .contentTransition(.numericText())
+                .frame(maxWidth: .infinity, minHeight: 76)
+                .background(
+                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                        .fill(WatchDesign.valueBackground)
+                )
+                .accessibilityLabel(summary.totalAccessibilityLabel)
 
-                Text("合計")
-                    .font(.subheadline.weight(.medium))
-                    .foregroundStyle(.white.opacity(0.86))
-            }
+            Picker(
+                summary.holeSelectionLabel,
+                selection: Binding(
+                    get: { summary.selectedHoleNumber },
+                    set: { holeNumber in
+                        guard holeNumber != summary.selectedHoleNumber else {
+                            return
+                        }
 
-            Text(summary.totalDescription)
-                .font(.footnote)
-                .foregroundStyle(.white.opacity(0.76))
+                        WatchHaptics.play(.click)
 
-            Button {
-                WatchHaptics.play(.success)
-                onAdvanceHole()
-            } label: {
-                HStack(spacing: 6) {
-                    Image(systemName: "flag.checkered.circle.fill")
-                    Text(summary.nextHoleTitle)
-                }
-                .font(.footnote.weight(.bold))
-                .frame(maxWidth: .infinity, minHeight: WatchDesign.buttonHeight - 4)
-            }
-            .buttonStyle(.borderedProminent)
-            .tint(.white.opacity(0.18))
-            .disabled(summary.isNextHoleDisabled)
-            .accessibilityLabel(summary.nextHoleTitle)
-            .accessibilityHint(summary.nextHoleDescription)
-
-            if summary.showsUndoAdvance {
-                VStack(alignment: .leading, spacing: 6) {
-                    Text("誤タップなら直前の移動を戻せます")
-                        .font(.caption2.weight(.semibold))
-                        .foregroundStyle(.white.opacity(0.72))
-
-                    Button {
-                        WatchHaptics.play(.directionDown)
-                        onUndoAdvanceHole()
-                    } label: {
-                        Label(summary.undoAdvanceTitle, systemImage: "arrow.uturn.backward.circle.fill")
-                            .font(.footnote.weight(.bold))
-                            .frame(maxWidth: .infinity, minHeight: WatchDesign.secondaryButtonHeight)
+                        Task { @MainActor in
+                            onSelectHole(holeNumber)
+                        }
                     }
-                    .buttonStyle(.bordered)
-                    .tint(.white.opacity(0.92))
-                    .accessibilityLabel(summary.undoAdvanceTitle)
-                    .accessibilityHint(summary.undoAdvanceDescription)
+                )
+            ) {
+                ForEach(summary.availableHoleNumbers, id: \.self) { holeNumber in
+                    Text("\(holeNumber)H")
+                        .tag(holeNumber)
                 }
-                .transition(.opacity.combined(with: .move(edge: .top)))
             }
+            .pickerStyle(.navigationLink)
+            .tint(.white)
+            .accessibilityLabel(summary.holeSelectionLabel)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(WatchDesign.cardPadding)
@@ -91,5 +69,9 @@ struct SummaryCardView: View {
             RoundedRectangle(cornerRadius: WatchDesign.cardCornerRadius, style: .continuous)
                 .fill(WatchDesign.summaryBackground)
         )
+        .overlay {
+            RoundedRectangle(cornerRadius: WatchDesign.cardCornerRadius, style: .continuous)
+                .stroke(.white.opacity(0.08), lineWidth: 1)
+        }
     }
 }

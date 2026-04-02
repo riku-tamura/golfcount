@@ -8,7 +8,7 @@ import Foundation
 struct CounterViewData: Identifiable {
     let metric: GolfCountMetric
     let title: String
-    let subtitle: String
+    let subtitle: String?
     let valueText: String
     let valueAccessibilityLabel: String
     let decrementButtonText: String
@@ -27,12 +27,12 @@ struct CounterViewData: Identifiable {
         title = metric.title
         subtitle = metric.subtitle
         valueText = "\(value)"
-        valueAccessibilityLabel = "\(metric.title) \(value)"
+        valueAccessibilityLabel = "\(record.selectedHoleLabel) の\(metric.title) \(value)"
         decrementButtonText = "-1"
         incrementButtonText = "+1"
-        decrementAccessibilityLabel = "\(metric.title)を1減らす"
-        incrementAccessibilityLabel = "\(metric.title)を1増やす"
+        decrementAccessibilityLabel = "\(record.selectedHoleLabel) の\(metric.title)を1減らす"
+        incrementAccessibilityLabel = "\(record.selectedHoleLabel) の\(metric.title)を1増やす"
         isDecrementDisabled = value <= metric.minimumValue
-        isIncrementDisabled = metric.maximumValue.map { value >= $0 } ?? false
+        isIncrementDisabled = metric.maximumValue(in: record).map { value >= $0 } ?? false
     }
 }

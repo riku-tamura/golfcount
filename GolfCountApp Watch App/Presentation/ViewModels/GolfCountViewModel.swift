@@ -12,7 +12,6 @@ final class GolfCountViewModel: ObservableObject {
     @Published var showsResetConfirmation = false
 
     private let repository: any GolfCountRepository
-    private var lastAdvancedRecord: GolfCountRecord?
 
     init(repository: any GolfCountRepository) {
         self.repository = repository
@@ -20,7 +19,7 @@ final class GolfCountViewModel: ObservableObject {
     }
 
     var summary: SummaryViewData {
-        SummaryViewData(record: record, canUndoAdvance: lastAdvancedRecord != nil)
+        SummaryViewData(record: record)
     }
 
     var counters: [CounterViewData] {
@@ -39,30 +38,18 @@ final class GolfCountViewModel: ObservableObject {
         showsResetConfirmation = true
     }
 
-    func advanceToNextHole() {
-        let updatedRecord = record.advancingToNextHole()
-
-        guard updatedRecord != record else {
+    func selectHole(_ holeNumber: Int) {
+        guard holeNumber != record.selectedHoleNumber else {
             return
         }
 
-        lastAdvancedRecord = record
+        var updatedRecord = record
+        updatedRecord.selectHole(holeNumber)
         record = updatedRecord
         repository.saveRecord(record)
     }
 
-    func undoAdvanceHole() {
-        guard let lastAdvancedRecord else {
-            return
-        }
-
-        record = lastAdvancedRecord
-        self.lastAdvancedRecord = nil
-        repository.saveRecord(record)
-    }
-
     func reset() {
-        lastAdvancedRecord = nil
         record = .initial
         showsResetConfirmation = false
         repository.saveRecord(record)
@@ -70,13 +57,12 @@ final class GolfCountViewModel: ObservableObject {
 
     private func update(_ metric: GolfCountMetric, delta: Int) {
         var updatedRecord = record
-        metric.applying(delta: delta, to: &updatedRecord)
+        updatedRecord.apply(delta: delta, for: metric)
 
         guard updatedRecord != record else {
             return
         }
 
-        lastAdvancedRecord = nil
         record = updatedRecord
         repository.saveRecord(record)
     }

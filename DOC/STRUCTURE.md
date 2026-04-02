@@ -42,25 +42,25 @@
 ### Domain
 
 - `GolfCountApp Watch App/Domain/Entities/GolfCountRecord.swift`
-  - ホール、打数、ペナルティ、パットの状態を表す Entity
+  - 18ホール分の状態と現在選択中ホールを表す Entity
 - `GolfCountApp Watch App/Domain/Entities/GolfCountMetric.swift`
-  - カウント対象ごとの表示名、範囲制約、更新ルールを表す定義
+  - 打数、パット、ペナルティごとの表示名、範囲制約、更新ルールを表す定義
 
 ### Data
 
 - `GolfCountApp Watch App/Data/Repositories/GolfCountRepository.swift`
   - 保存と読込の抽象インターフェース
 - `GolfCountApp Watch App/Data/Repositories/UserDefaultsGolfCountRepository.swift`
-  - `UserDefaults` を使って Watch 内だけに状態を保存する実装
+  - `UserDefaults` を使って18ホール分の状態を Watch 内だけに保存する実装
 - `GolfCountApp Watch App/Data/Repositories/InMemoryGolfCountRepository.swift`
   - Preview 用のメモリ上 Repository
 
 ### Presentation
 
 - `GolfCountApp Watch App/Presentation/ViewModels/GolfCountViewModel.swift`
-  - 画面状態の保持、加算減算、リセット、保存トリガを担当
+  - 画面状態の保持、ホール選択、加算減算、リセット、保存トリガを担当
 - `GolfCountApp Watch App/Presentation/ViewData/SummaryViewData.swift`
-  - サマリーカード表示用データ
+  - 18ホール合計とホール選択表示用データ
 - `GolfCountApp Watch App/Presentation/ViewData/CounterViewData.swift`
   - カウンターカード表示用データ
 - `GolfCountApp Watch App/Presentation/Support/WatchHaptics.swift`
@@ -68,7 +68,7 @@
 - `GolfCountApp Watch App/Presentation/Views/ContentView.swift`
   - 画面全体のレイアウトと操作の接続を担当
 - `GolfCountApp Watch App/Presentation/Views/Components/SummaryCardView.swift`
-  - 合計とホール情報の表示コンポーネント
+  - 18ホール合計とホール選択の表示コンポーネント
 - `GolfCountApp Watch App/Presentation/Views/Components/CounterCardView.swift`
   - 各項目の `+1 / -1` 操作コンポーネント
 - `GolfCountApp Watch App/Presentation/Style/WatchDesign.swift`

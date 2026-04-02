@@ -6,29 +6,21 @@
 import Foundation
 
 struct SummaryViewData {
-    let appName: String
+    let scoreTitle: String
+    let scoreScopeText: String
     let totalScoreText: String
-    let totalDescription: String
-    let holeLabel: String
-    let persistenceLabel: String
-    let nextHoleTitle: String
-    let nextHoleDescription: String
-    let undoAdvanceTitle: String
-    let undoAdvanceDescription: String
-    let isNextHoleDisabled: Bool
-    let showsUndoAdvance: Bool
+    let totalAccessibilityLabel: String
+    let holeSelectionLabel: String
+    let availableHoleNumbers: [Int]
+    let selectedHoleNumber: Int
 
-    init(record: GolfCountRecord, canUndoAdvance: Bool) {
-        appName = "GolfCount"
+    init(record: GolfCountRecord) {
+        scoreTitle = "スコア"
+        scoreScopeText = "18H合計"
         totalScoreText = "\(record.totalScore)"
-        totalDescription = "打数 + ペナルティ"
-        holeLabel = "Hole \(record.holeNumber)"
-        persistenceLabel = "Watch内のみ保存"
-        nextHoleTitle = "次のホールへ"
-        nextHoleDescription = "ホールを進めてカウントを0に戻す"
-        undoAdvanceTitle = "1つ戻す"
-        undoAdvanceDescription = "直前のホール移動を取り消して元の値に戻す"
-        isNextHoleDisabled = !record.canAdvanceHole
-        showsUndoAdvance = canUndoAdvance
+        totalAccessibilityLabel = "18ホール合計 \(record.totalScore)"
+        holeSelectionLabel = "ホール"
+        availableHoleNumbers = GolfCountRecord.availableHoleNumbers
+        selectedHoleNumber = record.selectedHoleNumber
     }
 }
