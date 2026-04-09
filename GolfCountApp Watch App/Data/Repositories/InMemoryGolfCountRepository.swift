@@ -7,12 +7,25 @@ import Foundation
 
 #if DEBUG
 struct InMemoryGolfCountRepository: GolfCountRepository {
-    let record: GolfCountRecord
+    let session: GolfCountSession
 
-    func loadRecord() -> GolfCountRecord {
-        record
+    init(session: GolfCountSession = .preview) {
+        self.session = session
     }
 
-    func saveRecord(_ record: GolfCountRecord) {}
+    init(record: GolfCountRecord) {
+        session = GolfCountSession(
+            currentRecord: record,
+            isRoundActive: true,
+            currentRoundStartedAt: nil,
+            completedRounds: []
+        )
+    }
+
+    func loadSession() -> GolfCountSession {
+        session
+    }
+
+    func saveSession(_ session: GolfCountSession) {}
 }
 #endif

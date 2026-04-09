@@ -6,6 +6,6 @@
 import Foundation
 
 protocol GolfCountRepository {
-    func loadRecord() -> GolfCountRecord
-    func saveRecord(_ record: GolfCountRecord)
+    func loadSession() -> GolfCountSession
+    func saveSession(_ session: GolfCountSession)
 }

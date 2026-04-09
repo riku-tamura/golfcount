@@ -8,6 +8,7 @@ import SwiftUI
 struct SummaryCardView: View {
     let summary: SummaryViewData
     let onSelectHole: (Int) -> Void
+    let onFinishRound: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -64,6 +65,19 @@ struct SummaryCardView: View {
             .pickerStyle(.navigationLink)
             .tint(.white)
             .accessibilityLabel(summary.holeSelectionLabel)
+
+            Button {
+                WatchHaptics.play(.click)
+                onFinishRound()
+            } label: {
+                Label(summary.goalButtonTitle, systemImage: "flag.checkered.circle.fill")
+                    .font(.footnote.weight(.bold))
+                    .frame(maxWidth: .infinity, minHeight: WatchDesign.buttonHeight - 4)
+            }
+            .buttonStyle(.borderedProminent)
+            .tint(.white.opacity(0.18))
+            .disabled(summary.isGoalDisabled)
+            .accessibilityLabel(summary.goalButtonAccessibilityLabel)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(WatchDesign.cardPadding)

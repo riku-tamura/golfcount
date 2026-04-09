@@ -62,6 +62,10 @@ struct GolfCountRecord: Equatable, Codable {
         holes.reduce(0) { $0 + $1.totalScore }
     }
 
+    var hasEnteredData: Bool {
+        holes.contains { $0.strokes >= 1 }
+    }
+
     var selectedHoleLabel: String {
         "\(selectedHoleNumber)H"
     }
@@ -90,6 +94,76 @@ struct GolfCountRecord: Equatable, Codable {
     }
 }
 
+struct GolfCountCompletedRound: Identifiable, Equatable, Codable {
+    let id: UUID
+    let startedAt: Date
+    let finishedAt: Date
+    let holes: [GolfCountRecord.Hole]
+
+    init(
+        id: UUID = UUID(),
+        startedAt: Date,
+        finishedAt: Date,
+        holes: [GolfCountRecord.Hole]
+    ) {
+        self.id = id
+        self.startedAt = startedAt
+        self.finishedAt = finishedAt
+        self.holes = Array(holes.prefix(GolfCountRecord.holeCount))
+            + Array(repeating: .empty, count: max(0, GolfCountRecord.holeCount - holes.count))
+    }
+
+    var totalScore: Int {
+        holes.reduce(0) { $0 + $1.totalScore }
+    }
+}
+
+struct GolfCountSession: Equatable, Codable {
+    var currentRecord: GolfCountRecord
+    var isRoundActive: Bool
+    var currentRoundStartedAt: Date?
+    var completedRounds: [GolfCountCompletedRound]
+
+    static let initial = GolfCountSession(
+        currentRecord: .initial,
+        isRoundActive: false,
+        currentRoundStartedAt: nil,
+        completedRounds: []
+    )
+
+    var canFinishRound: Bool {
+        isRoundActive && currentRecord.hasEnteredData
+    }
+
+    var latestCompletedRound: GolfCountCompletedRound? {
+        completedRounds.first
+    }
+
+    mutating func startRound(at date: Date = Date()) {
+        currentRecord = .initial
+        isRoundActive = true
+        currentRoundStartedAt = date
+    }
+
+    mutating func finishRound(at date: Date = Date()) -> GolfCountCompletedRound? {
+        guard isRoundActive else {
+            return nil
+        }
+
+        let completedRound = GolfCountCompletedRound(
+            startedAt: currentRoundStartedAt ?? date,
+            finishedAt: date,
+            holes: currentRecord.holes
+        )
+
+        completedRounds.insert(completedRound, at: 0)
+        currentRecord = .initial
+        isRoundActive = false
+        currentRoundStartedAt = nil
+        return completedRound
+    }
+}
+
 #if DEBUG
 extension GolfCountRecord {
     static let preview: GolfCountRecord = {
@@ -100,5 +174,20 @@ extension GolfCountRecord {
         holes[6] = Hole(strokes: 4, putts: 2, penalty: 1)
         return GolfCountRecord(selectedHoleNumber: 7, holes: holes)
     }()
+}
+
+extension GolfCountSession {
+    static let preview = GolfCountSession(
+        currentRecord: .preview,
+        isRoundActive: true,
+        currentRoundStartedAt: Date(timeIntervalSince1970: 1_744_049_600),
+        completedRounds: [
+            GolfCountCompletedRound(
+                startedAt: Date(timeIntervalSince1970: 1_744_020_800),
+                finishedAt: Date(timeIntervalSince1970: 1_744_025_200),
+                holes: GolfCountRecord.preview.holes
+            )
+        ]
+    )
 }
 #endif
