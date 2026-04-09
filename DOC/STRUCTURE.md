@@ -83,7 +83,7 @@
 - `DOC/GITHUB_SETTINGS.md`
   - GitHub で有効にしたい推奨設定と PR 運用手順
 - `DOC/PR_REVIEW_FLOW.md`
-  - PR のレビュー、修正コメント、再レビュー、approve、merge の流れを整理した運用ドキュメント
+  - PR のレビュー、修正対応、修正内容コメント、再レビュー、approve、merge の流れを整理した運用ドキュメント
 - `.github/pull_request_template.md`
   - PR 作成時に確認観点を揃えるためのテンプレート
 - `.github/workflows/watchos-build.yml`
