@@ -31,11 +31,7 @@ jobs:
               return;
             }
 
-            const body = [
-              '@codex review',
-              '',
-              '自動レビュー依頼です。最新の変更を確認してください。',
-            ].join('\n');
+            const body = '@codex 日本語でレビューしてください';
 
             await github.rest.issues.createComment({
               owner: context.repo.owner,

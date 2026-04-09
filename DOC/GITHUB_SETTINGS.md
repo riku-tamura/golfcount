@@ -48,7 +48,7 @@
 1. `main` には直接コミットしない
 2. 作業ごとに `codex/...` か `feature/...` ブランチを切る
 3. push 後に PR を作る
-4. PR 作成時と更新時に `@codex review` を自動投稿して Codex レビューを依頼する
+4. PR 作成時と更新時に `@codex 日本語でレビューしてください` を自動投稿して Codex レビューを依頼する
 5. PR 作成後に必ずレビューを行う
 6. 指摘があればレビューコメントとして残す
 7. 修正が必要なら、先に実際の修正対応を行う
@@ -94,6 +94,6 @@
 - `.github/workflows/watchos-build.yml`
   - PR と push で Watch アプリのビルド確認を走らせる
 - `.github/workflows/codex-review-request.yml`
-  - PR 作成時と更新時に `@codex review` コメントを自動投稿して Codex レビューを依頼する
+  - PR 作成時と更新時に `@codex 日本語でレビューしてください` コメントを自動投稿して Codex レビューを依頼する
 - `DOC/PR_REVIEW_FLOW.md`
   - PR 作成後のレビュー、修正対応、再レビュー、承認、merge の手順を整理する

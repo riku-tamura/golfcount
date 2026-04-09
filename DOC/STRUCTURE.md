@@ -89,7 +89,7 @@
 - `.github/workflows/watchos-build.yml`
   - push / pull request 時に watchOS ビルドを実行する CI 設定
 - `.github/workflows/codex-review-request.yml`
-  - PR 作成時と更新時に `@codex review` コメントを自動投稿して Codex レビューを依頼する workflow
+  - PR 作成時と更新時に `@codex 日本語でレビューしてください` コメントを自動投稿して Codex レビューを依頼する workflow
 
 ## 変更時の目安
 
