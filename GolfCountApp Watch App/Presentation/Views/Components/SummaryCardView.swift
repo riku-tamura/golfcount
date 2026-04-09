@@ -54,9 +54,11 @@ struct SummaryCardView: View {
                     }
                 )
             ) {
-                ForEach(summary.availableHoleNumbers, id: \.self) { holeNumber in
-                    Text("\(holeNumber)H")
-                        .tag(holeNumber)
+                ForEach(summary.holeOptions) { option in
+                    Text(option.title)
+                        .foregroundStyle(option.isEntered ? WatchDesign.enteredHoleColor : .white)
+                        .tag(option.holeNumber)
+                        .accessibilityLabel(option.accessibilityLabel)
                 }
             }
             .pickerStyle(.navigationLink)

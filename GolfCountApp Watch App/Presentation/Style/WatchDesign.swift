@@ -33,4 +33,5 @@ enum WatchDesign {
 
     static let cardBackground = Color.white.opacity(0.10)
     static let valueBackground = Color.black.opacity(0.18)
+    static let enteredHoleColor = Color(red: 0.70, green: 0.97, blue: 0.77)
 }

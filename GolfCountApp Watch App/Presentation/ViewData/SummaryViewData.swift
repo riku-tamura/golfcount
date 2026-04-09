@@ -6,12 +6,23 @@
 import Foundation
 
 struct SummaryViewData {
+    struct HoleOption: Identifiable {
+        let holeNumber: Int
+        let isEntered: Bool
+
+        var id: Int { holeNumber }
+        var title: String { "\(holeNumber)H" }
+        var accessibilityLabel: String {
+            "\(holeNumber)ホール \(isEntered ? "入力済み" : "未入力")"
+        }
+    }
+
     let scoreTitle: String
     let scoreScopeText: String
     let totalScoreText: String
     let totalAccessibilityLabel: String
     let holeSelectionLabel: String
-    let availableHoleNumbers: [Int]
+    let holeOptions: [HoleOption]
     let selectedHoleNumber: Int
 
     init(record: GolfCountRecord) {
@@ -20,7 +31,12 @@ struct SummaryViewData {
         totalScoreText = "\(record.totalScore)"
         totalAccessibilityLabel = "18ホール合計 \(record.totalScore)"
         holeSelectionLabel = "ホール"
-        availableHoleNumbers = GolfCountRecord.availableHoleNumbers
+        holeOptions = GolfCountRecord.availableHoleNumbers.map { holeNumber in
+            HoleOption(
+                holeNumber: holeNumber,
+                isEntered: record.hole(at: holeNumber).strokes >= 1
+            )
+        }
         selectedHoleNumber = record.selectedHoleNumber
     }
 }

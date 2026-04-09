@@ -70,6 +70,11 @@ struct GolfCountRecord: Equatable, Codable {
         holes[selectedHoleIndex]
     }
 
+    func hole(at holeNumber: Int) -> Hole {
+        let normalizedHoleNumber = min(max(1, holeNumber), Self.holeCount)
+        return holes[normalizedHoleNumber - 1]
+    }
+
     mutating func selectHole(_ holeNumber: Int) {
         selectedHoleNumber = min(max(1, holeNumber), Self.holeCount)
     }
