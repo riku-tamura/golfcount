@@ -1,0 +1,41 @@
+name: codex-review-request
+
+on:
+  pull_request_target:
+    types:
+      - opened
+      - reopened
+      - ready_for_review
+      - synchronize
+
+permissions:
+  pull-requests: write
+
+jobs:
+  request-codex-review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Request Codex review
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pullRequest = context.payload.pull_request;
+
+            if (!pullRequest) {
+              core.info('pull_request payload がないためスキップします。');
+              return;
+            }
+
+            if (pullRequest.draft) {
+              core.info('Draft PR のため Codex レビュー依頼をスキップします。');
+              return;
+            }
+
+            const body = '@codex 日本語でレビューしてください';
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pullRequest.number,
+              body,
+            });

@@ -82,10 +82,14 @@
   - 実機での確認事項と次に着手すべき内容の整理
 - `DOC/GITHUB_SETTINGS.md`
   - GitHub で有効にしたい推奨設定と PR 運用手順
+- `DOC/PR_REVIEW_FLOW.md`
+  - PR のレビュー、修正対応、修正内容コメント、再レビュー、approve、merge の流れを整理した運用ドキュメント
 - `.github/pull_request_template.md`
   - PR 作成時に確認観点を揃えるためのテンプレート
 - `.github/workflows/watchos-build.yml`
   - push / pull request 時に watchOS ビルドを実行する CI 設定
+- `.github/workflows/codex-review-request.yml`
+  - PR 作成時と更新時に `@codex 日本語でレビューしてください` コメントを自動投稿して Codex レビューを依頼する workflow
 
 ## 変更時の目安
 
