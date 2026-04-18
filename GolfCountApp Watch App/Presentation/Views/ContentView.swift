@@ -11,6 +11,7 @@ struct ContentView: View {
     @StateObject private var viewModel: GolfCountViewModel
     @State var started = false
     @State var finished = false
+    @State private var showsFinishConfirmation = false
 
     init(viewModel: GolfCountViewModel) {
         _viewModel = StateObject(wrappedValue: viewModel)
@@ -23,11 +24,16 @@ struct ContentView: View {
 
             if !started {
                 StartView {
+                    if canFinishRound {
+                        viewModel.reset()
+                    }
+
                     started = true
                     finished = false
                 }
             } else if finished {
                 FinishView {
+                    viewModel.reset()
                     started = false
                     finished = false
                 }
@@ -40,12 +46,10 @@ struct ContentView: View {
                 viewModel.reset()
             }
         }
-        .onChange(of: viewModel.record) { _, record in
-            guard started, !finished else {
-                return
+        .confirmationDialog("ラウンドを終了しますか？", isPresented: $showsFinishConfirmation) {
+            Button("終了する") {
+                finished = true
             }
-
-            finished = record.holes.allSatisfy { $0.strokes > 0 }
         }
     }
 
@@ -65,6 +69,24 @@ struct ContentView: View {
                     )
                 }
 
+                Button {
+                    showsFinishConfirmation = true
+                } label: {
+                    Label("ラウンド終了", systemImage: "flag.checkered")
+                        .frame(maxWidth: .infinity, minHeight: WatchDesign.buttonHeight)
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(canFinishRound ? .green : .gray)
+                .disabled(!canFinishRound)
+
+                Text(
+                    canFinishRound
+                    ? "入力内容を確認したら終了できます"
+                    : "18ホールすべてに打数を入力すると終了できます"
+                )
+                .font(.footnote)
+                .foregroundStyle(.white.opacity(0.82))
+
                 Button(role: .destructive) {
                     viewModel.presentResetConfirmation()
                 } label: {
@@ -78,6 +100,10 @@ struct ContentView: View {
             .padding(.vertical, 8)
         }
         .scrollIndicators(.hidden)
+    }
+
+    private var canFinishRound: Bool {
+        viewModel.record.holes.allSatisfy { $0.strokes > 0 }
     }
 }
 
