@@ -138,23 +138,23 @@ private struct StartView: View {
 }
 
 private struct FinishView: View {
-    let onSave: () -> Void
+    let onClose: () -> Void
 
     var body: some View {
         VStack(spacing: 12) {
             Spacer(minLength: 0)
 
-            Text("ラウンド終了")
+            Text("お疲れさまでした")
                 .font(.headline.weight(.bold))
                 .foregroundStyle(.white)
 
-            Text("保存して開始画面へ戻ります")
+            Text("開始画面に戻ります")
                 .font(.footnote)
                 .multilineTextAlignment(.center)
                 .foregroundStyle(.white.opacity(0.82))
 
-            Button(action: onSave) {
-                Text("保存")
+            Button(action: onClose) {
+                Text("開始画面へ戻る")
                     .frame(maxWidth: .infinity, minHeight: WatchDesign.buttonHeight)
             }
             .buttonStyle(.borderedProminent)
