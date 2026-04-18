@@ -7,6 +7,12 @@ import Foundation
 
 struct GolfCountRecord: Equatable, Codable {
     struct Hole: Equatable, Codable {
+        private enum CodingKeys: String, CodingKey {
+            case strokes
+            case putts
+            case penalty
+        }
+
         var strokes: Int
         var putts: Int
         var penalty: Int
@@ -36,6 +42,20 @@ struct GolfCountRecord: Equatable, Codable {
         mutating func updatePenalty(by delta: Int) {
             penalty = max(0, penalty + delta)
         }
+
+        init(from decoder: any Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            let strokes = try container.decode(Int.self, forKey: .strokes)
+            let putts = try container.decode(Int.self, forKey: .putts)
+            let penalty = try container.decode(Int.self, forKey: .penalty)
+
+            self.init(strokes: strokes, putts: putts, penalty: penalty)
+        }
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case selectedHoleNumber
+        case holes
     }
 
     static let holeCount = 18
@@ -83,6 +103,14 @@ struct GolfCountRecord: Equatable, Codable {
         var hole = currentHole
         metric.applying(delta: delta, to: &hole)
         holes[selectedHoleIndex] = hole
+    }
+
+    init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        let selectedHoleNumber = try container.decode(Int.self, forKey: .selectedHoleNumber)
+        let holes = try container.decode([Hole].self, forKey: .holes)
+
+        self.init(selectedHoleNumber: selectedHoleNumber, holes: holes)
     }
 
     private var selectedHoleIndex: Int {
