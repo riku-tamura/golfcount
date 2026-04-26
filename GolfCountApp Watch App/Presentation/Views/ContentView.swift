@@ -24,10 +24,6 @@ struct ContentView: View {
 
             if !started {
                 StartView {
-                    if canFinishRound {
-                        viewModel.reset()
-                    }
-
                     started = true
                     finished = false
                 }
