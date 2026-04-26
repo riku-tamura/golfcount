@@ -8,13 +8,21 @@
 import SwiftUI
 
 struct ContentView: View {
+    private enum StorageKeys {
+        static let finishedRound = "finishedRound"
+    }
+
+    @AppStorage(StorageKeys.finishedRound) private var persistedFinished = false
     @StateObject private var viewModel: GolfCountViewModel
-    @State var started = false
-    @State var finished = false
+    @State var started: Bool
+    @State var finished: Bool
     @State private var showsFinishConfirmation = false
 
     init(viewModel: GolfCountViewModel) {
+        let finishedRound = UserDefaults.standard.bool(forKey: StorageKeys.finishedRound)
         _viewModel = StateObject(wrappedValue: viewModel)
+        _started = State(initialValue: finishedRound)
+        _finished = State(initialValue: finishedRound)
     }
 
     var body: some View {
@@ -24,11 +32,13 @@ struct ContentView: View {
 
             if !started {
                 StartView {
+                    persistedFinished = false
                     started = true
                     finished = false
                 }
             } else if finished {
                 FinishView {
+                    persistedFinished = false
                     viewModel.reset()
                     started = false
                     finished = false
@@ -39,11 +49,13 @@ struct ContentView: View {
         }
         .confirmationDialog("すべてのカウントを0に戻しますか？", isPresented: $viewModel.showsResetConfirmation) {
             Button("リセットする", role: .destructive) {
+                persistedFinished = false
                 viewModel.reset()
             }
         }
         .confirmationDialog("ラウンドを終了しますか？", isPresented: $showsFinishConfirmation) {
             Button("終了する") {
+                persistedFinished = true
                 finished = true
             }
         }
