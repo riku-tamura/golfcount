@@ -8,12 +8,21 @@
 import SwiftUI
 
 struct ContentView: View {
+    private enum StorageKeys {
+        static let finishedRound = "finishedRound"
+    }
+
+    @AppStorage(StorageKeys.finishedRound) private var persistedFinished = false
     @StateObject private var viewModel: GolfCountViewModel
-    @State var started = false
-    @State var finished = false
+    @State var started: Bool
+    @State var finished: Bool
+    @State private var showsFinishConfirmation = false
 
     init(viewModel: GolfCountViewModel) {
+        let finishedRound = UserDefaults.standard.bool(forKey: StorageKeys.finishedRound)
         _viewModel = StateObject(wrappedValue: viewModel)
+        _started = State(initialValue: finishedRound)
+        _finished = State(initialValue: finishedRound)
     }
 
     var body: some View {
@@ -23,11 +32,14 @@ struct ContentView: View {
 
             if !started {
                 StartView {
+                    persistedFinished = false
                     started = true
                     finished = false
                 }
             } else if finished {
                 FinishView {
+                    persistedFinished = false
+                    viewModel.reset()
                     started = false
                     finished = false
                 }
@@ -37,15 +49,15 @@ struct ContentView: View {
         }
         .confirmationDialog("すべてのカウントを0に戻しますか？", isPresented: $viewModel.showsResetConfirmation) {
             Button("リセットする", role: .destructive) {
+                persistedFinished = false
                 viewModel.reset()
             }
         }
-        .onChange(of: viewModel.record) { _, record in
-            guard started, !finished else {
-                return
+        .confirmationDialog("ラウンドを終了しますか？", isPresented: $showsFinishConfirmation) {
+            Button("終了する") {
+                persistedFinished = true
+                finished = true
             }
-
-            finished = record.holes.allSatisfy { $0.strokes > 0 }
         }
     }
 
@@ -65,6 +77,24 @@ struct ContentView: View {
                     )
                 }
 
+                Button {
+                    showsFinishConfirmation = true
+                } label: {
+                    Label("ラウンド終了", systemImage: "flag.checkered")
+                        .frame(maxWidth: .infinity, minHeight: WatchDesign.buttonHeight)
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(canFinishRound ? .green : .gray)
+                .disabled(!canFinishRound)
+
+                Text(
+                    canFinishRound
+                    ? "入力内容を確認したら終了できます"
+                    : "18ホールすべてに打数を入力すると終了できます"
+                )
+                .font(.footnote)
+                .foregroundStyle(.white.opacity(0.82))
+
                 Button(role: .destructive) {
                     viewModel.presentResetConfirmation()
                 } label: {
@@ -78,6 +108,10 @@ struct ContentView: View {
             .padding(.vertical, 8)
         }
         .scrollIndicators(.hidden)
+    }
+
+    private var canFinishRound: Bool {
+        viewModel.record.holes.allSatisfy { $0.strokes > 0 }
     }
 }
 
@@ -112,23 +146,23 @@ private struct StartView: View {
 }
 
 private struct FinishView: View {
-    let onSave: () -> Void
+    let onClose: () -> Void
 
     var body: some View {
         VStack(spacing: 12) {
             Spacer(minLength: 0)
 
-            Text("ラウンド終了")
+            Text("お疲れさまでした")
                 .font(.headline.weight(.bold))
                 .foregroundStyle(.white)
 
-            Text("保存して開始画面へ戻ります")
+            Text("開始画面に戻ります")
                 .font(.footnote)
                 .multilineTextAlignment(.center)
                 .foregroundStyle(.white.opacity(0.82))
 
-            Button(action: onSave) {
-                Text("保存")
+            Button(action: onClose) {
+                Text("開始画面へ戻る")
                     .frame(maxWidth: .infinity, minHeight: WatchDesign.buttonHeight)
             }
             .buttonStyle(.borderedProminent)
